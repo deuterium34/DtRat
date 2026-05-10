@@ -41,3 +41,32 @@ func (b *Tgbot) screenshotCmd(eng *engine.Engine) {
 
 	b.SendFile(screenshot)
 }
+
+func (b *Tgbot) monitorCmd(args string, eng *engine.Engine) {
+	if args != "on" && args != "off" {
+		b.Send("Используйте /monitor [on|off]")
+		return
+	}
+
+	var err error = nil
+	switch args {
+	case "on":
+		err = eng.System.MonitorState(true)
+	case "off":
+		err = eng.System.MonitorState(false)
+	}
+
+	if err != nil {
+		b.Send("Ошибка: %v", err)
+		return
+	}
+
+	switch args {
+	case "on":
+		b.Send("Монитор включен")
+		return
+	case "off":
+		b.Send("Монитор выключен")
+		return
+	}
+}

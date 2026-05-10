@@ -5,6 +5,7 @@ import (
 	"dtrat/engine"
 	"fmt"
 	"sync"
+	"sync/atomic"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -14,8 +15,9 @@ type Tgbot struct {
 	updates *tgbotapi.UpdatesChannel
 	userID  int64
 
-	cfg    config.Config
-	sendMu sync.Mutex
+	cfg     config.Config
+	sendMu  sync.Mutex
+	waiting atomic.Bool
 }
 
 func NewBot(cfg config.Config) (*Tgbot, error) {
@@ -65,6 +67,9 @@ func (b *Tgbot) SendFile(file string) error {
 
 func (b *Tgbot) CommandsHandligLoop(engine *engine.Engine) {
 	for update := range *b.updates {
+		if b.waiting.Load() {
+			continue
+		}
 		if update.Message == nil || update.Message.From.ID != int(b.userID) {
 			continue
 		}
@@ -74,6 +79,23 @@ func (b *Tgbot) CommandsHandligLoop(engine *engine.Engine) {
 
 		b.commandSwitch(command, args, engine)
 	}
+}
+
+func (b *Tgbot) WaitAnswer() *tgbotapi.Message {
+	if b.waiting.Swap(true) {
+		return nil
+	}
+	defer b.waiting.Store(false)
+
+	for update := range *b.updates {
+		if update.Message == nil || update.Message.From.ID != int(b.userID) {
+			continue
+		}
+
+		return update.Message
+	}
+
+	return nil
 }
 
 func (b *Tgbot) WakeNotification() {
@@ -90,6 +112,8 @@ func (b *Tgbot) commandSwitch(cmd, args string, engine *engine.Engine) {
 		b.killCmd()
 	case "screenshot":
 		b.screenshotCmd(engine)
+	case "monitor":
+		b.monitorCmd(args, engine)
 	default:
 		b.defaultCmd()
 	}
