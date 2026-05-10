@@ -27,7 +27,7 @@ func (b *Tgbot) killCmd() {
 		return
 	}
 
-	close()
+	close.(func())()
 }
 
 func (b *Tgbot) screenshotCmd(eng *engine.Engine) {
