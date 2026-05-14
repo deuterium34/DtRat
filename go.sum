@@ -1,9 +1,5 @@
 github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk=
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
-github.com/deuterium34/dlog v0.0.0-20260508214336-c456cf7b8fd5 h1:ssO3fKqrkn3ZsNuk/2WPcXAdvvKrmrDWOpVE6IdaUYE=
-github.com/deuterium34/dlog v0.0.0-20260508214336-c456cf7b8fd5/go.mod h1:5Gvza7f/MLnNX3DSgFm6Zu2Dr1WqQHnTF4SsgAwUHFI=
-github.com/deuterium34/dlog v0.0.0-20260508215240-0fdfe4c52628 h1:CI1am3sQsIs4QOQoJ0H07+E/P+sn9T4c3AZD7dI8FzU=
-github.com/deuterium34/dlog v0.0.0-20260508215240-0fdfe4c52628/go.mod h1:5Gvza7f/MLnNX3DSgFm6Zu2Dr1WqQHnTF4SsgAwUHFI=
 github.com/deuterium34/dlog v0.0.0-20260508220841-f922d200f214 h1:T/Oxmog/hA/RS6qrFC50HP15lLa4gU0BmDOlM6pNeWM=
 github.com/deuterium34/dlog v0.0.0-20260508220841-f922d200f214/go.mod h1:5Gvza7f/MLnNX3DSgFm6Zu2Dr1WqQHnTF4SsgAwUHFI=
 github.com/ebitengine/oto/v3 v3.4.0 h1:br0PgASsEWaoWn38b2Goe7m1GKFYfNgnsjSd5Gg+/bQ=

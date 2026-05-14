@@ -30,7 +30,7 @@ func NewRat() (*Rat, error) {
 
 	bot, err := bot.NewTgBot(cfg)
 	if err == io.EOF {
-		panic("Отсутсвует соединение")
+		return nil, fmt.Errorf("Отсутсвует соединение")
 	}
 
 	if err != nil {

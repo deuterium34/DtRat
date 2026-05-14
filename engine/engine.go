@@ -41,7 +41,6 @@ func NewEngine(cfg config.Config) (*Engine, error) {
 }
 
 func (e *Engine) Close() {
-	e.Info.Close()
 	e.Media.Close()
 	e.System.Close()
 }

