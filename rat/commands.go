@@ -15,7 +15,7 @@ func (r *Rat) defaultCmd() {
 }
 
 func (r *Rat) helpCmd() {
-	r.Bot.Send("Доступные команды:\n")
+	r.Bot.Send(helpText)
 }
 
 func (r *Rat) killCmd() {
