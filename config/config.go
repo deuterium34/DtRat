@@ -1,14 +1,27 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/BurntSushi/toml"
 )
 
 const (
+	/*
+		Доступные хранилища:
+		file
+	*/
+	UseStorage = "file"
+
 	Version = "0.0.0"
 )
+
+var (
+	ErrUndefainedStorage = errors.New("Неизвестное хранилище")
+)
+
+// ======================================
 
 type Config struct {
 	General GenaralConfig `toml:"General"`
@@ -29,11 +42,26 @@ type GenaralConfig struct {
 	HostName string `toml:"Host_name"`
 }
 
-func NewConfig(configPath string) (Config, error) {
-	var cfg Config
-	_, err := toml.DecodeFile(configPath, &cfg)
+// ======================================
+
+func NewConfig() (Config, error) {
+	var storage Storage
+	switch UseStorage {
+	case "file":
+		storage = &fileStorage{path: "config.toml"}
+	default:
+		return Config{}, ErrUndefainedStorage
+	}
+
+	cfgRaw, err := storage.Get()
 	if err != nil {
-		return cfg, fmt.Errorf("DecodeFile: %w", err)
+		return Config{}, fmt.Errorf("storage.Get: %w", err)
+	}
+
+	var cfg Config
+	_, err = toml.Decode(cfgRaw, &cfg)
+	if err != nil {
+		return cfg, fmt.Errorf("Decode: %w", err)
 	}
 
 	return cfg, nil

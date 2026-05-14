@@ -23,7 +23,7 @@ type Rat struct {
 }
 
 func NewRat() (*Rat, error) {
-	cfg, err := config.NewConfig("config.toml")
+	cfg, err := config.NewConfig()
 	if err != nil {
 		return nil, fmt.Errorf("NewConfig: %w", err)
 	}
