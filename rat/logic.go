@@ -54,6 +54,8 @@ func (r *Rat) commandsSwitch(text string) {
 		r.monitorCmd(args)
 	case "keyboard":
 		r.keyboardCmd(args)
+	case "browser":
+		r.browserCmd(args)
 	default:
 		r.defaultCmd()
 	}
