@@ -1,5 +1,7 @@
 package system
 
+import "dtrat/errs"
+
 func setMonitorState(enabled bool) error {
-	return ErrUnsupportedOs
+	return errs.ErrUnsupportedOs
 }

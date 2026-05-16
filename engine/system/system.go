@@ -2,7 +2,6 @@ package system
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"image/png"
 	"os"
@@ -13,10 +12,6 @@ import (
 )
 
 type System struct{}
-
-var (
-	ErrUnsupportedOs = errors.New("Эта ОС не поддерживается")
-)
 
 func NewSystem() (*System, error) {
 	s := System{}

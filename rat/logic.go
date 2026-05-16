@@ -7,9 +7,10 @@ import (
 )
 
 func (r *Rat) internalClose(reason error) {
-	r.Bot.Close()
 	r.Engine.Close()
 	r.Spy.Close()
+
+	r.Bot.Close()
 
 	r.CloseCh <- reason
 }

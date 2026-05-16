@@ -33,6 +33,7 @@ func (m *Media) Play(file *os.File) error {
 	if err != nil {
 		return fmt.Errorf("NewPlayer: %w", err)
 	}
+	defer pl.Close()
 
 	pl.LoadTrack(decodedMp3)
 	err = pl.Play()

