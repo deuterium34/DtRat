@@ -1,4 +1,4 @@
-package bot
+package transport
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ var (
 	ErrWaitAborted = errors.New("Ожидание сообщения было прервано")
 )
 
-type Bot interface {
+type Transport interface {
 	// Методы для отправки сообщений
 	Send(s string, args ...any) error
 	SendFile(file string) error

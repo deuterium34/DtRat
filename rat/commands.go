@@ -1,8 +1,8 @@
 package rat
 
 import (
-	"dtrat/bot"
 	"dtrat/config"
+	"dtrat/transport"
 	"os"
 )
 
@@ -81,7 +81,7 @@ func (r *Rat) monitorCmd(args string) {
 }
 
 func (r *Rat) keyboardCmd(args string) {
-	cmd, arg := bot.ParseCommand(args)
+	cmd, arg := transport.ParseCommand(args)
 
 	var err error
 	switch cmd {

