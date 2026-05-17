@@ -1,11 +1,9 @@
 package system
 
 import (
-	"bytes"
 	"fmt"
 	"image/png"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/kbinani/screenshot"
@@ -20,20 +18,6 @@ func NewSystem() (*System, error) {
 
 func (s *System) Close() {
 
-}
-
-func (s *System) Exec(cmd *exec.Cmd) (string, error) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-	if err != nil {
-		return stderr.String(), fmt.Errorf("cmd.Run: %w", err)
-	}
-
-	return out.String(), nil
 }
 
 func (s *System) Screenshot() (string, error) {
