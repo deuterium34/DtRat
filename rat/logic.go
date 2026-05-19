@@ -1,8 +1,6 @@
 package rat
 
 import (
-	"dtrat/transport"
-
 	"github.com/deuterium34/dlog"
 )
 
@@ -37,26 +35,4 @@ func (r *Rat) commandHandling() error {
 	}
 
 	return nil
-}
-
-func (r *Rat) commandsSwitch(text string) {
-	cmd, args := transport.ParseCommand(text)
-	switch cmd {
-	case "start":
-		r.startCmd()
-	case "kill":
-		r.killCmd()
-	case "help":
-		r.helpCmd()
-	case "screenshot":
-		r.screenshotCmd()
-	case "monitor":
-		r.monitorCmd(args)
-	case "keyboard":
-		r.keyboardCmd(args)
-	case "browser":
-		r.browserCmd(args)
-	default:
-		r.defaultCmd()
-	}
 }

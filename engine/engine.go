@@ -21,7 +21,7 @@ func NewEngine(cfg config.Config) (*Engine, error) {
 		return nil, fmt.Errorf("NewSystem: %w", err)
 	}
 
-	inf, err := info.NewInfo()
+	inf, err := info.NewInfo(sys)
 	if err != nil {
 		return nil, fmt.Errorf("NewInfo: %w", err)
 	}
@@ -41,6 +41,7 @@ func NewEngine(cfg config.Config) (*Engine, error) {
 }
 
 func (e *Engine) Close() {
+	e.Info.Stop()
 	e.Media.Close()
 	e.System.Close()
 }

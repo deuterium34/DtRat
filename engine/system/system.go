@@ -5,6 +5,7 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/kbinani/screenshot"
 )
@@ -53,4 +54,20 @@ func (s *System) Screenshot() (string, error) {
 
 func (s *System) MonitorState(enabled bool) error {
 	return setMonitorState(enabled)
+}
+
+func (s *System) Drives() []string {
+	if runtime.GOOS != "windows" {
+		return []string{"/"}
+	}
+
+	var drives []string
+	// Проверяем буквы от A до Z
+	for _, drive := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
+		drivePath := string(drive) + ":\\"
+		if _, err := os.Stat(drivePath); err == nil {
+			drives = append(drives, drivePath)
+		}
+	}
+	return drives
 }
