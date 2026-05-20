@@ -23,7 +23,7 @@ type Tgbot struct {
 }
 
 func NewTgBot(cfg config.Config) (Transport, error) {
-	bot, err := tgbotapi.NewBotAPI(cfg.Bot.Token)
+	bot, err := tgbotapi.NewBotAPI(cfg.Transport.Telegram.Token)
 	if err != nil {
 		return nil, fmt.Errorf("tgbotapi.NewBotAPI: %w", err)
 	}
@@ -38,7 +38,7 @@ func NewTgBot(cfg config.Config) (Transport, error) {
 	b := &Tgbot{
 		bot:     bot,
 		updates: &upd,
-		userID:  int64(cfg.Bot.UserID),
+		userID:  int64(cfg.Transport.Telegram.UserID),
 		cfg:     cfg,
 	}
 

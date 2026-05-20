@@ -11,13 +11,15 @@ func main() {
 
 	r, err := rat.NewRat()
 	if err != nil {
-		panic(err)
+		dlog.GLogger.Error("rat.NewRat: %v", err)
+		return
 	}
 
 	r.Start()
 
 	closeReason := <-r.CloseCh
 	if closeReason != nil {
-		panic(closeReason)
+		dlog.GLogger.Error("closeReason: %v", closeReason)
+		return
 	}
 }

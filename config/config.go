@@ -10,7 +10,7 @@ import (
 const (
 	/*
 		Доступные хранилища:
-		file
+		file, hardcoded
 	*/
 	UseStorage = "file"
 
@@ -22,24 +22,37 @@ var (
 )
 
 // ======================================
+// Структуры для хранения конфигурации, соответствующие структуре TOML-файла
 
 type Config struct {
-	General GenaralConfig `toml:"General"`
-	Bot     BotConfig     `toml:"Bot"`
-	Engine  EngineConfig  `toml:"Engine"`
+	General   GeneralConfig   `toml:"General"`
+	Transport TransportConfig `toml:"Transport"`
+	Engine    EngineConfig    `toml:"Engine"`
 }
 
-type BotConfig struct {
+type EngineConfig struct {
+	SampleRate int `toml:"Sample_rate"` // Частота дискретизации для аудио
+}
+
+type GeneralConfig struct {
+	AgentName    string `toml:"Agent_name"`
+	UseTransport string `toml:"Use_transport"`
+}
+
+type TransportConfig struct {
+	Telegram *TelegramConfig `toml:"Telegram"`
+	TCP      *TCPConfig      `toml:"TCP"`
+}
+
+type TelegramConfig struct {
 	Token  string `toml:"Token"`
 	UserID int    `toml:"User_id"`
 }
 
-type EngineConfig struct {
-	SampleRate int `toml:"Sample_rate"`
-}
-
-type GenaralConfig struct {
-	HostName string `toml:"Host_name"`
+type TCPConfig struct {
+	Addr         string `toml:"Addr"`
+	ReadTimeout  int    `toml:"Read_timeout"`  // В секундах
+	WriteTimeout int    `toml:"Write_timeout"` // В секундах
 }
 
 // ======================================
@@ -49,6 +62,8 @@ func NewConfig() (Config, error) {
 	switch UseStorage {
 	case "file":
 		storage = &fileStorage{path: "config.toml"}
+	case "hardcoded":
+		storage = &hardcodedStorage{}
 	default:
 		return Config{}, ErrUndefainedStorage
 	}
