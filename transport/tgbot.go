@@ -8,8 +8,14 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
+
+const (
+	tgMaxMessageLen = 4096
+	sendCooldown    = 40 * time.Millisecond // ~25 сообщений в секунду, безопасно для лимитов TG
 )
 
 type Tgbot struct {
@@ -57,9 +63,38 @@ func (b *Tgbot) Send(s string, args ...any) error {
 	b.sendMu.Lock()
 	defer b.sendMu.Unlock()
 
-	msg := tgbotapi.NewMessage(b.userID, fmt.Sprintf(s, args...))
-	_, err := b.bot.Send(msg)
-	return err
+	fullText := fmt.Sprintf(s, args...)
+	runes := []rune(fullText) // Переводим в руны, чтобы не побить UTF-8 символы
+
+	// Если сообщение влезает в лимит, отправляем одной пачкой без задержек
+	if len(runes) <= tgMaxMessageLen {
+		msg := tgbotapi.NewMessage(b.userID, fullText)
+		_, err := b.bot.Send(msg)
+		return err
+	}
+
+	// Если текст большой, бьем на части
+	for i := 0; i < len(runes); i += tgMaxMessageLen {
+		end := i + tgMaxMessageLen
+		if end > len(runes) {
+			end = len(runes)
+		}
+
+		part := string(runes[i:end])
+		msg := tgbotapi.NewMessage(b.userID, part)
+
+		_, err := b.bot.Send(msg)
+		if err != nil {
+			return fmt.Errorf("ошибка отправки части сообщения: %w", err)
+		}
+
+		// Если это не последний кусок, делаем паузу перед следующей отправкой
+		if end < len(runes) {
+			time.Sleep(sendCooldown)
+		}
+	}
+
+	return nil
 }
 
 func (b *Tgbot) SendFile(file string) error {
