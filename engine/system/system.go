@@ -1,6 +1,8 @@
 package system
 
 import (
+	"dtrat/engine/system/usbwin"
+	"dtrat/errs"
 	"fmt"
 	"image/png"
 	"os"
@@ -70,4 +72,34 @@ func (s *System) Drives() []string {
 		}
 	}
 	return drives
+}
+
+func (s *System) GetUSBDevices() ([]usbwin.USBDevice, error) {
+	if runtime.GOOS != "windows" {
+		return nil, errs.ErrUnsupportedOs
+	}
+
+	return usbwin.GetUSBDevices()
+}
+
+func (s *System) SetUSBDeviceState(DeviceID string, enabled bool) error {
+	if runtime.GOOS != "windows" {
+		return errs.ErrUnsupportedOs
+	}
+
+	if enabled {
+		err := usbwin.EnableDevice(DeviceID)
+		if err == nil {
+			return nil
+		}
+
+		return usbwin.EnableDevicePnPUtil(DeviceID)
+	} else {
+		err := usbwin.DisableDevice(DeviceID)
+		if err == nil {
+			return nil
+		}
+
+		return usbwin.DisableDevicePnPUtil(DeviceID)
+	}
 }

