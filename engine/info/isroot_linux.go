@@ -2,7 +2,7 @@ package info
 
 import "os"
 
-func isRoot() bool {
+func (i *Info) IsRoot() bool {
 	if os.Geteuid() == 0 {
 		return true
 	} else {

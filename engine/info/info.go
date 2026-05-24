@@ -22,7 +22,3 @@ func NewInfo(system *system.System) (*Info, error) {
 func (i *Info) Stop() {
 	i.stopped.Store(true)
 }
-
-func (i *Info) IsRoot() bool {
-	return isRoot()
-}

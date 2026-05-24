@@ -6,7 +6,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func isRoot() bool {
+func (i *Info) IsRoot() bool {
 	var token windows.Token
 
 	//err := windows.OpenCurrentProcessToken(windows.GetCurrentProcess(), windows.TOKEN_QUERY, &token)
