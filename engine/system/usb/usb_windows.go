@@ -1,8 +1,8 @@
 // Gemeni
 
-// Package usb-win предоставляет инструменты для управления USB-устройствами в Windows
+// Package usb предоставляет инструменты для управления USB-устройствами в Windows
 // исключительно средствами Pure Go (без CGO) через SetupAPI.
-package usbwin
+package usb
 
 import (
 	"fmt"

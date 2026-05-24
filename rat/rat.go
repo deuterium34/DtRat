@@ -7,6 +7,7 @@ import (
 	"dtrat/hider"
 	"dtrat/spy"
 	"dtrat/transport"
+	"dtrat/transport/tcp"
 	"fmt"
 	"time"
 )
@@ -71,7 +72,7 @@ func choiceTransport(cfg config.Config) (transport.Transport, error) {
 	case "telegram":
 		return transport.NewTgBot(cfg)
 	case "tcp":
-		return transport.NewTCPClient(
+		return tcp.NewTCPClient(
 			cfg.Transport.TCP.Addr,
 			time.Duration(cfg.Transport.TCP.ReadTimeout),
 			time.Duration(cfg.Transport.TCP.WriteTimeout),

@@ -1,8 +1,10 @@
 // Gemini
 
-package transport
+package tcp
 
 import (
+	"context"
+	"dtrat/transport"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -70,7 +72,7 @@ func (c *timeoutConn) Write(b []byte) (int, error) {
 }
 
 // NewTCPClient создает транспорт для клиентской стороны
-func NewTCPClient(addr string, readTimeout, writeTimeout time.Duration) Transport {
+func NewTCPClient(addr string, readTimeout, writeTimeout time.Duration) transport.Transport {
 	return &tcpTransport{
 		addr:         addr,
 		isServer:     false,
@@ -83,7 +85,7 @@ func NewTCPClient(addr string, readTimeout, writeTimeout time.Duration) Transpor
 }
 
 // NewTCPServer создает транспорт для серверной стороны
-func NewTCPServer(addr string, readTimeout, writeTimeout time.Duration) Transport {
+func NewTCPServer(addr string, readTimeout, writeTimeout time.Duration) transport.Transport {
 	return &tcpTransport{
 		addr:         addr,
 		isServer:     true,
@@ -105,7 +107,11 @@ func (t *tcpTransport) Start() error {
 	}
 
 	if t.isServer {
-		ln, err := net.Listen("tcp", t.addr)
+		// Вместо обычного net.Listen используем ListenConfig с включенным KeepAlive
+		lc := net.ListenConfig{
+			KeepAlive: 15 * time.Second, // ОС будет слать пинги каждые 15 сек, если в канале тишина
+		}
+		ln, err := lc.Listen(context.Background(), "tcp", t.addr)
 		if err != nil {
 			return fmt.Errorf("failed to start listener: %w", err)
 		}
@@ -116,12 +122,30 @@ func (t *tcpTransport) Start() error {
 			t.listener.Close()
 			return fmt.Errorf("failed to accept connection: %w", err)
 		}
+
+		// Активируем KeepAlive на самом соединении (на всякий случай)
+		if tcpConn, ok := rawConn.(*net.TCPConn); ok {
+			tcpConn.SetKeepAlive(true)
+			tcpConn.SetKeepAlivePeriod(15 * time.Second)
+		}
+
 		t.conn = &timeoutConn{Conn: rawConn, readTimeout: t.readTimeout, writeTimeout: t.writeTimeout}
 	} else {
-		rawConn, err := net.Dial("tcp", t.addr)
+		// ... для Клиента:
+		dialer := &net.Dialer{
+			KeepAlive: 15 * time.Second, // Включает проверку связи со стороны клиента
+			Timeout:   10 * time.Second, // Таймаут на само подключение
+		}
+		rawConn, err := dialer.Dial("tcp", t.addr)
 		if err != nil {
 			return fmt.Errorf("failed to connect to server: %w", err)
 		}
+
+		if tcpConn, ok := rawConn.(*net.TCPConn); ok {
+			tcpConn.SetKeepAlive(true)
+			tcpConn.SetKeepAlivePeriod(15 * time.Second)
+		}
+
 		t.conn = &timeoutConn{Conn: rawConn, readTimeout: t.readTimeout, writeTimeout: t.writeTimeout}
 	}
 
