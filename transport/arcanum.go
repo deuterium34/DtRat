@@ -14,7 +14,7 @@ func NewArcanumTransport(cfg config.Config) (Transport, error) {
 	agent, err := arcanum.NewArcanumAgent(
 		cfg.Transport.Arcanum.Addr,
 		cfg.General.AgentName,
-		arcanum.GenerateKey(config.Secret),
+		arcanum.GenerateKey(cfg.Transport.Arcanum.Secret),
 	)
 
 	if err != nil {

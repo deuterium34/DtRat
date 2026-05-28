@@ -15,7 +15,6 @@ const (
 	UseStorage = "file"
 
 	Version = "0.0.0"
-	Secret  = "dtrat"
 )
 
 var (
@@ -51,7 +50,8 @@ type TelegramConfig struct {
 }
 
 type ArcanumConfig struct {
-	Addr string `toml:"Addr"`
+	Addr   string `toml:"Addr"`
+	Secret string `toml:"Secret"`
 }
 
 // ======================================
