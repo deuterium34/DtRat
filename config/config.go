@@ -15,6 +15,7 @@ const (
 	UseStorage = "file"
 
 	Version = "0.0.0"
+	Secret  = "dtrat"
 )
 
 var (
@@ -50,9 +51,7 @@ type TelegramConfig struct {
 }
 
 type ArcanumConfig struct {
-	Addr         string `toml:"Addr"`
-	ReadTimeout  int    `toml:"Read_timeout"`  // В секундах
-	WriteTimeout int    `toml:"Write_timeout"` // В секундах
+	Addr string `toml:"Addr"`
 }
 
 // ======================================

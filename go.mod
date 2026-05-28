@@ -4,6 +4,7 @@ go 1.26.2
 
 require (
 	github.com/BurntSushi/toml v1.6.0
+	github.com/deuterium34/XdX-Arcanum v0.0.0-20260524143551-040246c08609
 	github.com/deuterium34/dlog v0.0.0-20260508220841-f922d200f214
 	github.com/ebitengine/oto/v3 v3.4.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible

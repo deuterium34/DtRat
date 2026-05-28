@@ -82,7 +82,7 @@ func choiceTransport(cfg config.Config) (transport.Transport, error) {
 	case "telegram":
 		return transport.NewTgBot(cfg)
 	case "arcanum":
-
+		return transport.NewArcanumTransport(cfg)
 	default:
 		return nil, fmt.Errorf("неизвестный транспорт: %s", cfg.General.UseTransport)
 	}
