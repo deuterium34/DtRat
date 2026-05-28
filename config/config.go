@@ -41,7 +41,7 @@ type GeneralConfig struct {
 
 type TransportConfig struct {
 	Telegram *TelegramConfig `toml:"Telegram"`
-	TCP      *TCPConfig      `toml:"TCP"`
+	Arcanum  *ArcanumConfig  `toml:"Arcanum"`
 }
 
 type TelegramConfig struct {
@@ -49,7 +49,7 @@ type TelegramConfig struct {
 	UserID int    `toml:"User_id"`
 }
 
-type TCPConfig struct {
+type ArcanumConfig struct {
 	Addr         string `toml:"Addr"`
 	ReadTimeout  int    `toml:"Read_timeout"`  // В секундах
 	WriteTimeout int    `toml:"Write_timeout"` // В секундах

