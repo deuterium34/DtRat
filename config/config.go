@@ -31,7 +31,8 @@ type Config struct {
 }
 
 type EngineConfig struct {
-	SampleRate int `toml:"Sample_rate"` // Частота дискретизации для аудио
+	SampleRate  int `toml:"Sample_rate"`  // Частота дискретизации для аудио
+	DdosWorkers int `toml:"DDoS_workers"` // Количество воркеров для DDoS атаки
 }
 
 type GeneralConfig struct {
