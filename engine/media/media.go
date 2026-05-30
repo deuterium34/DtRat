@@ -2,6 +2,7 @@ package media
 
 import (
 	"dtrat/config"
+	"dtrat/engine/media/viewer"
 	"dtrat/errs"
 	"fmt"
 	"os"
@@ -64,5 +65,18 @@ func (m *Media) OpenBrowser(url string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (m *Media) Show(filepath string) error {
+	if runtime.GOOS != "windows" {
+		return errs.ErrUnsupportedOs
+	}
+
+	_, err := viewer.Show(filepath)
+	if err != nil {
+		return fmt.Errorf("Show: %w", err)
+	}
+
 	return nil
 }

