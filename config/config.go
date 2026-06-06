@@ -10,9 +10,10 @@ import (
 const (
 	/*
 		Доступные хранилища:
-		file, hardcoded
+		file, hardcoded, encrypted
 	*/
-	UseStorage = "file"
+	ConfigName = "config.toml"
+	UseStorage = "encrypted"
 
 	Version = "0.0.0"
 )
@@ -61,9 +62,11 @@ func NewConfig() (Config, error) {
 	var storage Storage
 	switch UseStorage {
 	case "file":
-		storage = &fileStorage{path: "config.toml"}
+		storage = &fileStorage{path: ConfigName}
 	case "hardcoded":
 		storage = &hardcodedStorage{}
+	case "encrypted":
+		storage = NewEncryptedStorage(ConfigName, "dtrat")
 	default:
 		return Config{}, ErrUndefainedStorage
 	}
