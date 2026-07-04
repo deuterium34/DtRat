@@ -1,9 +1,9 @@
 version: '3'
 
 vars:
-  VERSION: '{{default "dev" .CLI_ARGS}}'
-  CFG_NAME: '{{default "config.toml" .CLI_ARGS}}'
-  CFG_TYPE: '{{default "file" .CLI_ARGS}}'
+  VERSION: "dev"
+  CFG_NAME: "config.toml"
+  CFG_TYPE: "file"
 
 tasks:
   build-win:

