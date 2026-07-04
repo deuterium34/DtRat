@@ -7,18 +7,15 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-const (
+var (
 	/*
 		Доступные хранилища:
 		file, hardcoded, encrypted
 	*/
 	ConfigName = "config.toml"
-	UseStorage = "encrypted"
+	ConfigType = "file"
+	Version    = "dev"
 
-	Version = "0.0.0"
-)
-
-var (
 	ErrUndefainedStorage = errors.New("Неизвестное хранилище")
 )
 
@@ -60,7 +57,7 @@ type ArcanumConfig struct {
 
 func NewConfig() (Config, error) {
 	var storage Storage
-	switch UseStorage {
+	switch ConfigType {
 	case "file":
 		storage = &fileStorage{path: ConfigName}
 	case "hardcoded":

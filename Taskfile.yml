@@ -1,0 +1,37 @@
+version: '3'
+
+vars:
+  VERSION: '{{default "dev" .CLI_ARGS}}'
+  CFG_NAME: '{{default "config.toml" .CLI_ARGS}}'
+  CFG_TYPE: '{{default "file" .CLI_ARGS}}'
+
+tasks:
+  build-win:
+    desc: Build to binary for Windows
+    dir: ./src
+    env:
+      GOOS: windows
+      GOARCH: amd64
+    cmds:
+      - echo Build started, please wait...
+      - >
+        go build 
+        -ldflags="-X config.Version={{.VERSION}} -X config.ConfigName={{.CFG_NAME}} -X config.ConfigType={{.CFG_TYPE}}" 
+        -o ../bin/dtrat.exe
+      - echo Done.
+    silent: true
+
+  build-linux:
+    desc: Build to binary for Linux
+    dir: ./src
+    env:
+      GOOS: linux
+      GOARCH: amd64
+    cmds:
+      - echo Build started, please wait...
+      - >
+        go build 
+        -ldflags="-X config.Version={{.VERSION}} -X config.ConfigName={{.CFG_NAME}} -X config.ConfigType={{.CFG_TYPE}}" 
+        -o ../bin/dtrat
+      - echo Done.
+    silent: true
